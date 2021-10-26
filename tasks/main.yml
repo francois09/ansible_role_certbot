@@ -1,0 +1,42 @@
+---
+- name: Certbot install packages
+  apt:
+    name: "{{ certbot__default_packages }}"
+    update_cache: yes
+    state: present
+  when: certbot__install
+  register: snapd_installed
+
+- name: Install snap core
+  snap:
+    channel: stable
+    classic: yes
+    name: core
+    state: present
+  when:
+    - certbot__install
+    - snapd_installed is changed
+
+- name: Install certbot
+  snap:
+    channel: stable
+    classic: yes
+    name: certbot
+    state: present
+  when: certbot__install
+
+- name: Symlink certbot executable
+  file:
+    state: link
+    src: /snap/bin/certbot
+    path: /usr/bin/certbot
+    owner: root
+    group: root
+    mode: 0755
+  when: certbot__install
+
+- name: Obtain initial certificate
+  shell: "certbot certonly -n --webroot -w {{ certbot__config.rootdir }} --agree-tos -d {{ certbot__config.domain }} -m {{ certbot__config.alert_email }}"
+  when:
+    - certbot__install
+    - certbot__configure

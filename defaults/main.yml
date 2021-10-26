@@ -1,0 +1,8 @@
+---
+# Default do nothing
+certbot__install: False
+certbot__configure: False
+
+# defaults file for certbot
+certbot__default_packages:
+  - snapd
