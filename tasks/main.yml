@@ -40,3 +40,12 @@
   when:
     - certbot__install
     - certbot__configure
+    - certbot__config|type_debug == "dict"
+
+- name: Obtain multiple initial certificate
+  shell: "certbot certonly -n --webroot -w {{ item.rootdir }} --agree-tos -d {{ item.domain }} -m {{ item.alert_email }}"
+  with_items: "{{ certbot__config }}"
+  when:
+    - certbot__install
+    - certbot__configure
+    - certbot__config|type_debug == "list"
