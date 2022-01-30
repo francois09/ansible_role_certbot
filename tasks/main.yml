@@ -42,10 +42,42 @@
     - certbot__configure
     - certbot__config|type_debug == "dict"
 
-- name: Obtain multiple initial certificate
-  shell: "certbot certonly -n --webroot -w {{ item.rootdir }} --agree-tos -d {{ item.domain }} -m {{ item.alert_email }}"
+- name: Obtain multiple initial certificates
+  include_tasks: multicert.yml
   with_items: "{{ certbot__config }}"
   when:
     - certbot__install
     - certbot__configure
     - certbot__config|type_debug == "list"
+
+- name: Hook install file
+  copy:
+    dest: "/usr/local/bin/hook_{{ certbot__config.domain }}.sh"
+    content: "{{ certbot__config.renew_hook.shell }}"
+    owner: "{{ certbot__config.renew_hook.owner }}"
+    group: "{{ certbot__config.renew_hook.group }}"
+    mode: 0700
+  when:
+    - certbot__install
+    - certbot__configure
+    - certbot__config|type_debug == "dict"
+
+- name: Hook configure
+  lineinfile:
+    state: present
+    path: "/etc/letsencrypt/renewal/{{ certbot__config.domain }}.conf"
+    line: "renew_hook = /usr/local/bin/hook_{{ certbot__config.domain }}.sh"
+    regexp: "^# renew_hook ="
+  when:
+    - certbot__install
+    - certbot__configure
+    - certbot__config|type_debug == "dict"
+
+- name: Hook multiple certs
+  include_tasks: multicert_hook.yml
+  with_items: "{{ certbot__config }}"
+  when:
+    - certbot__install
+    - certbot__configure
+    - certbot__config|type_debug == "list"
+
