@@ -1,0 +1,19 @@
+---
+- name: Hook multiple install file
+  copy:
+    dest: "/usr/local/bin/hook_{{ item.domain }}.sh"
+    content: "{{ item.renew_hook.shell }}"
+    owner: "{{ item.renew_hook.owner }}"
+    group: "{{ item.renew_hook.group }}"
+    mode: 0700
+  when:
+    - item.renew_hook is defined
+
+- name: Hook multiple configure
+  lineinfile:
+    state: present
+    path: "/etc/letsencrypt/renewal/{{ item.domain }}.conf"
+    line: "renew_hook = /usr/local/bin/hook_{{ item.domain }}.sh"
+    regexp: "^# renew_hook ="
+  when:
+    - item.renew_hook is defined

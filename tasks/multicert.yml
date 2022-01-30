@@ -1,0 +1,10 @@
+---
+- name: Check if cert already present
+  stat:
+    path: "/etc/letsencrypt/live/{{ item.domain }}/cert.pem"
+  register: certif
+
+- name: Obtain multiple initial certificate
+  shell: "certbot certonly -n --webroot -w {{ item.rootdir }} --agree-tos -d {{ item.domain }} -m {{ item.alert_email }}"
+  when:
+    - not certif.stat.exists
