@@ -60,6 +60,7 @@
   when:
     - certbot__install
     - certbot__configure
+    - certbot__config.renew_hook is defined
     - certbot__config|type_debug == "dict"
 
 - name: Hook configure
@@ -71,6 +72,7 @@
   when:
     - certbot__install
     - certbot__configure
+    - certbot__config.renew_hook is defined
     - certbot__config|type_debug == "dict"
 
 - name: Hook multiple certs
