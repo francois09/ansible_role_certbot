@@ -15,5 +15,6 @@
     path: "/etc/letsencrypt/renewal/{{ item.domain }}.conf"
     line: "renew_hook = /usr/local/bin/hook_{{ item.domain }}.sh"
     regexp: "^# renew_hook ="
+    insertbefore: "[[webroot_map]]"
   when:
     - item.renew_hook is defined
