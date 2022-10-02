@@ -69,6 +69,7 @@
     path: "/etc/letsencrypt/renewal/{{ certbot__config.domain }}.conf"
     line: "renew_hook = /usr/local/bin/hook_{{ certbot__config.domain }}.sh"
     regexp: "^# renew_hook ="
+    insertbefore: '[[webroot_map]]'
   when:
     - certbot__install
     - certbot__configure
