@@ -3,6 +3,7 @@
   stat:
     path: "/etc/letsencrypt/live/{{ item.domain }}/cert.pem"
   register: certif
+  check_mode: false
 
 - name: Obtain multiple initial certificate
   shell: "certbot certonly -n --webroot -w {{ item.rootdir }} --agree-tos -d {{ item.domain }} -m {{ item.alert_email }}"
